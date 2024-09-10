@@ -1,0 +1,56 @@
+version: "3.1"
+services:
+  app:
+    image: blink
+    container_name: blink_php
+    build: 
+      context: .
+      dockerfile: .
+      args:
+          UID: "1000" # Replace with your host user's UID
+          GID: "1000" # Replace with your host user's GID 
+    restart: "no"
+    ports:
+     
+      - 8000:8000
+    volumes:
+      - ./:/var/www/html
+      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - blink
+
+    command: "php artisan serve --host=0.0.0.0 --port=8000"
+
+   
+
+  db:
+    image: mysql:latest
+    container_name: mysql_db_blink
+    restart: "no"
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+    volumes:
+      - db_data_blink:/docker-entrypoint-initdb.d
+      - db_data_blink:/var/lib/mysql
+    networks:
+      - blink
+   
+  
+  phpmyadmin:
+    image: phpmyadmin:5.2.0-apache
+    restart: "no"
+    ports:
+      - 8080:80
+    environment:
+      - PMA_ARBITRARY=1
+    networks:
+      - blink
+
+
+networks:
+  blink:
+    driver: bridge
+
+
+volumes:
+  db_data_blink:
