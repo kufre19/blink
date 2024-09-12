@@ -24,7 +24,7 @@ const Home = () => {
                   Invest your spare change in Bitcoin and save<br /> with crypto to earn interest in real time.
                 </p>
                 <div className="button wow fadeInUp" data-wow-delay=".8s">
-                  <Link to="/about" className="btn">Discover More</Link>
+                  <Link to="/signup" className="btn">Get Started</Link>
                 </div>
               </div>
             </div>
@@ -39,7 +39,6 @@ const Home = () => {
           </div>
         </div>
       </section>
-      {/* Add other sections like Features, Call to Action, etc. here */}
     </>
   );
 };

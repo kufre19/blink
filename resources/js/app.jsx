@@ -5,16 +5,21 @@ import Home from './components/Home';
 import SignUp from './components/SignUp';
 import SignIn from './components/SignIn';
 import Navbar from './components/Navbar';
+import PrivateRoute from './PrivateRoute';
+import Dashboard from './components/Dashboard';
 
 const App = () => {
   return (
     <Router>
-      <Navbar />
+      {/* <Navbar /> */}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signin" element={<SignIn />} />
-        {/* Add more routes as needed */}
+
+        <Route element={<PrivateRoute />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Route>
       </Routes>
     </Router>
   );
