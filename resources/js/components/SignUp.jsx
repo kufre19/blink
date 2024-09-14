@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
 import TbdService from '../services/TbdService';
+import Alert from './Alert';
+
 
 const SignUp = () => {
   const navigate = useNavigate();
@@ -11,7 +13,7 @@ const SignUp = () => {
     password: '',
     confirmPassword: ''
   });
-  const [error, setError] = useState('');
+  const [alert, setAlert] = useState({ show: false, message: '', type: '' });
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -19,24 +21,18 @@ const SignUp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setAlert({ show: false, message: '', type: '' });
 
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords don't match");
+      setAlert({ show: true, message: "Passwords don't match", type: 'danger' });
       return;
     }
 
     try {
-      // Create DID
       const { didString, portableDid } = await TbdService.createDid();
-
-      // Encrypt the portable DID with the user's password
       const encryptedPortableDid = TbdService.encryptPortableDid(portableDid, formData.password);
-
-      // Get Verifiable Credential
       const verifiableCredential = await TbdService.getVerifiableCredential(formData.name, didString);
 
-      // Send registration data to Laravel backend
       const response = await fetch('/api/register', {
         method: 'POST',
         headers: {
@@ -51,23 +47,25 @@ const SignUp = () => {
           did: didString,
           verifiable_credential: verifiableCredential,
           encrypted_private_key: "nothing for now",
-          encrypted_portable_did:encryptedPortableDid
+          encrypted_portable_did: encryptedPortableDid
         }),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
+        localStorage.setItem('token', data.token);
         localStorage.setItem('encryptedPortableDid', encryptedPortableDid);
-        // Registration successful, redirect to dashboard
         navigate('/dashboard');
       } else {
-        const errorData = await response.json();
-        setError(errorData.message || 'Registration failed');
+        setAlert({ show: true, message: data.message || 'Registration failed', type: 'danger' });
       }
     } catch (error) {
       console.error('Registration error:', error);
-      setError('An error occurred during registration. Please try again.');
+      setAlert({ show: true, message: 'An error occurred during registration. Please try again.', type: 'danger' });
     }
   };
+
 
   return (
     <>
@@ -82,7 +80,7 @@ const SignUp = () => {
                     <h3>Sign Up Now</h3>
                     <p>Use the form below to create your account.</p>
                   </div>
-                  {error && <div className="alert alert-danger">{error}</div>}
+                  {alert.show && <Alert message={alert.message} type={alert.type} onClose={() => setAlert({ ...alert, show: false })} />}
                   <div className="input-head">
                     <div className="form-group input-group">
                       <label><i className="lni lni-user"></i></label>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
+import Alert from './Alert';
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -8,7 +9,7 @@ const SignIn = () => {
     email: '',
     password: ''
   });
-  const [error, setError] = useState('');
+  const [alert, setAlert] = useState({ show: false, message: '', type: '' });
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -16,8 +17,7 @@ const SignIn = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-
+    setAlert({ show: false, message: '', type: '' });
 
     try {
       const response = await fetch('/api/login', {
@@ -29,20 +29,22 @@ const SignIn = () => {
         body: JSON.stringify(formData),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
-        const data = await response.json();
         localStorage.setItem('token', data.token);
         localStorage.setItem('encryptedPrivateKey', data.encrypted_private_key);
+        localStorage.setItem('encryptedPortableDid', data.encrypted_portable_did);
         navigate('/dashboard');
       } else {
-        const errorData = await response.json();
-        setError(errorData.message || 'Login failed');
+        setAlert({ show: true, message: data.message || 'Login failed', type: 'danger' });
       }
     } catch (error) {
       console.error('Login error:', error);
-      setError('An error occurred during login. Please try again.');
+      setAlert({ show: true, message: 'An error occurred during login. Please try again.', type: 'danger' });
     }
   };
+
 
   return (
     <>
@@ -57,7 +59,7 @@ const SignIn = () => {
                     <h3>Sign In Now</h3>
                     <p>Sign in to your account to continue.</p>
                   </div>
-                  {error && <div className="alert alert-danger">{error}</div>}
+                  {alert.show && <Alert message={alert.message} type={alert.type} onClose={() => setAlert({ ...alert, show: false })} />}
                   <div className="input-head">
                     <div className="form-group input-group">
                       <label><i className="lni lni-envelope"></i></label>

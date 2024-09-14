@@ -107,9 +107,23 @@ class TbdService {
   async getOfferingsFromPfi(pfiDid) {
     try {
       const offerings = await TbdexHttpClient.getOfferings({ pfiDid });
-      return offerings.filter(offering => this.isValidOffering(offering));
+      return offerings;
     } catch (error) {
       console.error(`Error fetching offerings from PFI ${pfiDid}:`, error);
+      return [];
+    }
+  }
+
+  async fetchOfferingsFromMockPfi(endpoint) {
+    try {
+      const response = await fetch(endpoint);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      return data.data || []; // The offerings are in the 'data' array
+    } catch (error) {
+      console.error(`Error fetching offerings from ${endpoint}:`, error);
       return [];
     }
   }
@@ -126,49 +140,37 @@ class TbdService {
       offering.data.cancellation;
   }
 
-  // async getMatchingOfferings(payinCurrencyCode, payoutCurrencyCode) {
-  //   const matchedOfferings = [];
-
-  //   for (const pfiDid of this.pfiDids) {
-  //     const offerings = await this.getOfferingsFromPfi(pfiDid);
-
-  //     const filteredOfferings = offerings.filter(offering =>
-  //       offering.data.payin.currencyCode === payinCurrencyCode &&
-  //       offering.data.payout.currencyCode === payoutCurrencyCode
-  //     );
-
-  //     matchedOfferings.push(...filteredOfferings);
-  //   }
-
-  //   return matchedOfferings;
-  // }
-
-  async fetchOfferingsFromMockPfi(endpoint) {
-    try {
-      const response = await fetch(endpoint);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      return data.data || []; // The offerings are in the 'data' array
-    } catch (error) {
-      console.error(`Error fetching offerings from ${endpoint}:`, error);
-      return [];
-    }
-  }
-
   async getMatchingOfferings(payinCurrencyCode, payoutCurrencyCode) {
-    const allOfferings = await Promise.all(
-      this.pfiEndpoints.map(endpoint => this.fetchOfferingsFromMockPfi(endpoint))
-    );
+    const matchedOfferings = [];
 
-    const matchedOfferings = allOfferings.flat().filter(offering =>
-      offering.data.payin.currencyCode === payinCurrencyCode &&
-      offering.data.payout.currencyCode === payoutCurrencyCode
-    );
+    for (const pfiDid of this.pfiDids) {
+      const offerings = await this.getOfferingsFromPfi(pfiDid);
+
+      const filteredOfferings = offerings.filter(offering =>
+        offering.data.payin.currencyCode === payinCurrencyCode &&
+        offering.data.payout.currencyCode === payoutCurrencyCode
+      );
+
+      matchedOfferings.push(...filteredOfferings);
+    }
 
     return matchedOfferings;
   }
+
+
+
+  // async getMatchingOfferings(payinCurrencyCode, payoutCurrencyCode) {
+  //   const allOfferings = await Promise.all(
+  //     this.pfiEndpoints.map(endpoint => this.fetchOfferingsFromMockPfi(endpoint))
+  //   );
+
+  //   const matchedOfferings = allOfferings.flat().filter(offering =>
+  //     offering.data.payin.currencyCode === payinCurrencyCode &&
+  //     offering.data.payout.currencyCode === payoutCurrencyCode
+  //   );
+
+  //   return matchedOfferings;
+  // }
 
 
 
