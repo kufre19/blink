@@ -22,7 +22,7 @@ const App = () => {
         <Route element={<PrivateRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
           {/* <Route path="/invoices" element={<Dashboard />} /> */}
-          <Route path="/invoices/:id" element={<InvoiceDetailsComponent />} />
+          <Route path="/invoice/:id" element={<InvoiceDetailsComponent />} />
           <Route path="/profile" element={<ProfilePage />} />
 
         </Route>

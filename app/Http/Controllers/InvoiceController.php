@@ -26,19 +26,29 @@ class InvoiceController extends Controller
         return response()->json($invoice, 201);
     }
 
-    public function show(Invoice $invoice)
+    public function show(Request $request, Invoice $invoice)
     {
-        $this->authorize('view', $invoice);
+        if ($request->user()->id !== $invoice->user_id) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
         return response()->json($invoice);
     }
 
     public function pay(Request $request, Invoice $invoice)
     {
-        $this->authorize('update', $invoice);
+        // Check if the authenticated user is either the invoice creator or the payer
+        if ($request->user()->id !== $invoice->user_id) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
         
-     
+        if ($invoice->status === 'paid') {
+            return response()->json(['error' => 'Invoice is already paid'], 400);
+        }
+        
         $invoice->update(['status' => 'paid']);
         
         return response()->json($invoice);
     }
+
+  
 }
