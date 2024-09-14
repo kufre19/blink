@@ -172,32 +172,32 @@ class TbdService {
 
 
 
-  async createAndSendRfq(selectedOffering, encryptedPortableDid, password, payinDetails, payoutDetails, userName ) {
+  async createAndSendRfq(selectedOffering, encryptedPortableDid, password, payinDetails, payoutDetails, userName) {
     const portableDid = this.decryptPortableDid(encryptedPortableDid, password);
     const reconstructedDid = await this.reconstructDid(portableDid);
-  
+
+    console.log("pay in details:", payinDetails);
+    console.log("pay out details:", payoutDetails);
     // Validate payin details
-    const requiredPayinDetails = selectedOffering.data.payin.methods[0].requiredPaymentDetails.properties;
+    const requiredPayinDetails = selectedOffering.data.payin.methods[0].requiredPaymentDetails?.properties || {};
     const validatedPayinDetails = {};
     for (const [key, value] of Object.entries(requiredPayinDetails)) {
-      if (!payinDetails.paymentDetails[key]) {
-        throw new Error(`Missing required payin detail: ${key}`);
+      if (payinDetails.paymentDetails[key]) {
+        validatedPayinDetails[key] = payinDetails.paymentDetails[key];
       }
-      validatedPayinDetails[key] = payinDetails.paymentDetails[key];
     }
-  
+
     // Validate payout details
-    const requiredPayoutDetails = selectedOffering.data.payout.methods[0].requiredPaymentDetails.properties;
+    const requiredPayoutDetails = selectedOffering.data.payout.methods[0].requiredPaymentDetails?.properties || {};
     const validatedPayoutDetails = {};
     for (const [key, value] of Object.entries(requiredPayoutDetails)) {
-      if (!payoutDetails[key]) {
-        throw new Error(`Missing required payout detail: ${key}`);
+      if (payoutDetails[key]) {
+        validatedPayoutDetails[key] = payoutDetails[key];
       }
-      validatedPayoutDetails[key] = payoutDetails[key];
     }
     const verifiableCredential = await this.getVerifiableCredential(userName, reconstructedDid.uri);
 
-  
+
     const rfData = {
       offeringId: selectedOffering.metadata.id,
       payin: {
@@ -211,7 +211,7 @@ class TbdService {
       },
       claims: [verifiableCredential] 
     };
-  
+
     const rfqToSend = Rfq.create({
       metadata: {
         to: selectedOffering.metadata.from,
@@ -220,9 +220,9 @@ class TbdService {
       },
       data: rfData
     });
-  
+
     await rfqToSend.sign(reconstructedDid);
-  
+
     try {
       rfqToSend.verifyOfferingRequirements(selectedOffering);
       await TbdexHttpClient.createExchange(rfqToSend);
@@ -233,7 +233,7 @@ class TbdService {
     }
   }
 
-  async pollForQuote(pfiDid, customerDid, exchangeId,password) {
+  async pollForQuote(pfiDid, customerDid, exchangeId, password) {
     let quote;
     let close;
 
