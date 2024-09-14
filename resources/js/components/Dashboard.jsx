@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Grid, Paper, Typography, Button, Avatar, Modal, TextField, MenuItem, Card, CardContent } from '@mui/material';
+import { Container, Grid, Paper, Typography, Button, Avatar, Modal, TextField, MenuItem, Card, CardContent, CircularProgress } from '@mui/material';
 import { Bell, Settings, LogOut } from 'lucide-react';
 import TbdService from '../services/TbdService';
+import { DidDht } from '@web5/dids';
 
 const AccountOverview = ({ balance }) => (
   <Paper elevation={3} sx={{ p: 2 }}>
@@ -86,7 +87,7 @@ const BuyModal = ({ open, handleClose, handleBuy }) => {
   );
 };
 
-const OfferingsModal = ({ open, handleClose, offerings }) => (
+const OfferingsModal = ({ open, handleClose, offerings, handleOfferingSelect }) => (
   <Modal open={open} onClose={handleClose}>
     <Paper sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 600, p: 4, maxHeight: '80vh', overflow: 'auto' }}>
       <Typography variant="h6" component="h2">Available Offerings</Typography>
@@ -102,7 +103,7 @@ const OfferingsModal = ({ open, handleClose, offerings }) => (
             <Typography>Payin Method: {offering.data.payin.methods[0].kind}</Typography>
             <Typography>Payout Method: {offering.data.payout.methods[0].kind}</Typography>
             <Typography>Estimated Settlement Time: {offering.data.payout.methods[0].estimatedSettlementTime} seconds</Typography>
-            <Button variant="contained" sx={{ mt: 1 }}>Select</Button>
+            <Button variant="contained" sx={{ mt: 1 }} onClick={() => handleOfferingSelect(offering)}>Select</Button>
           </CardContent>
         </Card>
       ))}
@@ -116,6 +117,14 @@ const Dashboard = () => {
   const [buyModalOpen, setBuyModalOpen] = useState(false);
   const [offeringsModalOpen, setOfferingsModalOpen] = useState(false);
   const [offerings, setOfferings] = useState([]);
+  const [paymentDetails, setPaymentDetails] = useState({});
+
+
+  const [selectedOffering, setSelectedOffering] = useState(null);
+  const [quote, setQuote] = useState(null);
+  const [orderStatus, setOrderStatus] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     // Fetch user data and transactions
@@ -123,7 +132,80 @@ const Dashboard = () => {
     fetchTransactions();
   }, []);
 
+  const handlePaymentDetailsChange = (event) => {
+    setPaymentDetails({
+      ...paymentDetails,
+      [event.target.name]: event.target.value
+    });
+  };
+
+  const handleOfferingSelect = async (offering) => {
+    setSelectedOffering(offering);
+    setOfferingsModalOpen(false);
+
+    setIsLoading(true);
+    try {
+      if (!user.did) {
+        throw new Error("User DID not found. Please ensure you're logged in.");
+      }
+
+      // Prompt for password
+      const enteredPassword = prompt("Please enter your password to sign the transaction:");
+      if (!enteredPassword) {
+        throw new Error("Password is required to sign the transaction.");
+      }
+
+
+      const payinDetails = {
+        amount: offering.data.payin.amount || '500', // Use offering amount if available, otherwise default
+        paymentDetails: {
+          accountNumber: paymentDetails.accountNumber,
+          routingNumber: paymentDetails.routingNumber
+        }
+      };
+
+      const payoutDetails = {
+        address: paymentDetails.btcAddress
+      };
+
+    
+  
+    
+
+      const rfq = await TbdService.createAndSendRfq(offering, user.encrypted_portable_did, enteredPassword, payinDetails, payoutDetails, user.name);
+
+      const { quote, close } = await TbdService.pollForQuote(offering.metadata.from, user.encrypted_portable_did, rfq.exchangeId,enteredPassword);
+
+      if (quote) {
+        setQuote(quote);
+        const userConfirmed = window.confirm(`Do you want to place an order for ${quote.data.payin.amount} ${quote.data.payin.currencyCode} to receive ${quote.data.payout.amount} ${quote.data.payout.currencyCode}?`);
+
+        if (userConfirmed) {
+          const order = await TbdService.createAndSendOrder(quote, user.encrypted_portable_did,enteredPassword);
+          const { statusUpdates, close } = await TbdService.pollForOrderStatus(quote.metadata.from, user.encrypted_portable_did, order.exchangeId,enteredPassword);
+
+          setOrderStatus(statusUpdates[statusUpdates.length - 1]);
+
+          if (close.data.success) {
+            alert('Order completed successfully!');
+          } else {
+            alert(`Order failed. Reason: ${close.data.reason}`);
+          }
+        }
+      } else if (close) {
+        alert(`Exchange closed. Reason: ${close.data.reason}`);
+      }
+    } catch (error) {
+      console.error('Error in offer selection process:', error);
+      setError(error.message || 'An error occurred during the offer selection process. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const fetchUserData = async () => {
+    // TbdService.testEncryptionDecryption();
+
     try {
       const response = await fetch('/api/user', {
         headers: {
@@ -132,7 +214,7 @@ const Dashboard = () => {
       });
       if (response.ok) {
         const userData = await response.json();
-        console.log(userData);
+        // console.log(userData);
         setUser(userData);
       }
     } catch (error) {
@@ -205,8 +287,58 @@ const Dashboard = () => {
           <RecentTransactions transactions={transactions} />
         </Grid>
       </Grid>
+      {isLoading && (
+        <CircularProgress />
+      )}
+      <Paper elevation={3} sx={{ mt: 2, p: 2 }}>
+        <Typography variant="h6">Payment Details</Typography>
+        <TextField
+          name="accountNumber"
+          label="Account Number"
+          value={paymentDetails.accountNumber || ''}
+          onChange={handlePaymentDetailsChange}
+          fullWidth
+          margin="normal"
+        />
+        <TextField
+          name="routingNumber"
+          label="Routing Number"
+          value={paymentDetails.routingNumber || ''}
+          onChange={handlePaymentDetailsChange}
+          fullWidth
+          margin="normal"
+        />
+        <TextField
+          name="btcAddress"
+          label="BTC Address"
+          value={paymentDetails.btcAddress || ''}
+          onChange={handlePaymentDetailsChange}
+          fullWidth
+          margin="normal"
+        />
+      </Paper>
+
+      {error && (
+        <Paper elevation={3} sx={{ mt: 2, p: 2, backgroundColor: 'error.light' }}>
+          <Typography color="error">{error}</Typography>
+        </Paper>
+      )}
+      {quote && (
+        <Paper elevation={3} sx={{ mt: 2, p: 2 }}>
+          <Typography variant="h6">Quote Received</Typography>
+          <Typography>Pay In: {quote.data.payin.amount} {quote.data.payin.currencyCode}</Typography>
+          <Typography>Receive: {quote.data.payout.amount} {quote.data.payout.currencyCode}</Typography>
+          <Typography>Expires At: {new Date(quote.data.expiresAt).toLocaleString()}</Typography>
+        </Paper>
+      )}
+      {orderStatus && (
+        <Paper elevation={3} sx={{ mt: 2, p: 2 }}>
+          <Typography variant="h6">Order Status</Typography>
+          <Typography>{orderStatus}</Typography>
+        </Paper>
+      )}
       <BuyModal open={buyModalOpen} handleClose={() => setBuyModalOpen(false)} handleBuy={handleBuy} />
-      <OfferingsModal open={offeringsModalOpen} handleClose={() => setOfferingsModalOpen(false)} offerings={offerings} />
+      <OfferingsModal open={offeringsModalOpen} handleClose={() => setOfferingsModalOpen(false)} offerings={offerings} handleOfferingSelect={handleOfferingSelect} />
     </Container>
   );
 };

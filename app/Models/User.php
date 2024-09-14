@@ -23,6 +23,7 @@ class User extends Authenticatable
         'password',
         'did',
         'encrypted_private_key',
+        'encrypted_portable_did'
 
     ];
 

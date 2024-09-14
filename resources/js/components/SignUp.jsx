@@ -28,12 +28,13 @@ const SignUp = () => {
 
     try {
       // Create DID
-      const did = await TbdService.createDid();
-      // console.log(did);
+      const { didString, portableDid } = await TbdService.createDid();
+
+      // Encrypt the portable DID with the user's password
+      const encryptedPortableDid = TbdService.encryptPortableDid(portableDid, formData.password);
 
       // Get Verifiable Credential
-      const verifiableCredential = await TbdService.getVerifiableCredential(formData.name, did);
-      // console.log(verifiableCredential);
+      const verifiableCredential = await TbdService.getVerifiableCredential(formData.name, didString);
 
       // Send registration data to Laravel backend
       const response = await fetch('/api/register', {
@@ -47,14 +48,16 @@ const SignUp = () => {
           email: formData.email,
           password: formData.password,
           password_confirmation: formData.confirmPassword,
-          did,
+          did: didString,
           verifiable_credential: verifiableCredential,
-          encrypted_private_key: "nothing for now"
+          encrypted_private_key: "nothing for now",
+          encrypted_portable_did:encryptedPortableDid
         }),
       });
 
       if (response.ok) {
-        // Registration successful, redirect to dashboard or login
+        localStorage.setItem('encryptedPortableDid', encryptedPortableDid);
+        // Registration successful, redirect to dashboard
         navigate('/dashboard');
       } else {
         const errorData = await response.json();
