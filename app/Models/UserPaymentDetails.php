@@ -5,20 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Transactions extends Model
+class UserPaymentDetails extends Model
 {
     use HasFactory;
 
-
     protected $fillable = [
         'user_id',
-        'from_currency',
-        'to_currency',
-        'from_amount',
-        'to_amount',
-        'status',
-        'pfi_did',
-        'exchange_id',
+        'btc_address',
+        'usd_account_number',
+        'usd_routing_number',
+        'kes_account_number',
+        'iban',
     ];
 
     public function user()

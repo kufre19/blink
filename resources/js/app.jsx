@@ -7,6 +7,8 @@ import SignIn from './components/SignIn';
 import Navbar from './components/Navbar';
 import PrivateRoute from './PrivateRoute';
 import Dashboard from './components/Dashboard';
+import InvoiceDetailsComponent from './components/InvoiceDetailsComponent';
+import ProfilePage from './components/ProfilePage';
 
 const App = () => {
   return (
@@ -19,6 +21,10 @@ const App = () => {
 
         <Route element={<PrivateRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
+          {/* <Route path="/invoices" element={<Dashboard />} /> */}
+          <Route path="/invoices/:id" element={<InvoiceDetailsComponent />} />
+          <Route path="/profile" element={<ProfilePage />} />
+
         </Route>
       </Routes>
     </Router>

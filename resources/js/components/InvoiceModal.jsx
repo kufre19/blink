@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
-import { Modal, Paper, Typography, TextField, Button } from '@mui/material';
+import { Modal, Paper, Typography, TextField, Button, MenuItem } from '@mui/material';
 
 const InvoiceModal = ({ open, handleClose, user }) => {
   const [invoiceData, setInvoiceData] = useState({
     name: '',
     description: '',
     amount: '',
+    currency: 'USD',
   });
+
+  const currencies = ['USD', 'EUR', 'GBP', 'JPY', 'KES', 'NGN', 'BTC', 'ETH'];
 
   const handleChange = (e) => {
     setInvoiceData({ ...invoiceData, [e.target.name]: e.target.value });
@@ -24,10 +27,9 @@ const InvoiceModal = ({ open, handleClose, user }) => {
       });
 
       if (response.ok) {
-        // Handle successful invoice creation
         handleClose();
+        // You might want to refresh the invoice list here
       } else {
-        // Handle error
         console.error('Failed to create invoice');
       }
     } catch (error) {
@@ -64,6 +66,21 @@ const InvoiceModal = ({ open, handleClose, user }) => {
           onChange={handleChange}
           sx={{ mt: 2 }}
         />
+        <TextField
+          select
+          fullWidth
+          label="Currency"
+          name="currency"
+          value={invoiceData.currency}
+          onChange={handleChange}
+          sx={{ mt: 2 }}
+        >
+          {currencies.map((option) => (
+            <MenuItem key={option} value={option}>
+              {option}
+            </MenuItem>
+          ))}
+        </TextField>
         <Button onClick={handleCreateInvoice} variant="contained" sx={{ mt: 2 }}>
           Create Invoice
         </Button>

@@ -11,16 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('transactions', function (Blueprint $table) {
+        Schema::create('user_payment_details', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('from_currency');
-            $table->string('to_currency');
-            $table->decimal('from_amount', 20, 8);
-            $table->decimal('to_amount', 20, 8);
-            $table->string('status');
-            $table->string('pfi_did');
-            $table->string('exchange_id');
+            $table->string('btc_address')->nullable();
+            $table->string('usd_account_number')->nullable();
+            $table->string('usd_routing_number')->nullable();
+            $table->string('kes_account_number')->nullable();
+            $table->string('iban')->nullable();
             $table->timestamps();
         });
     }
@@ -30,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('transactions');
+        Schema::dropIfExists('user_payment_details');
     }
 };

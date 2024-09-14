@@ -11,4 +11,9 @@ class UserController extends Controller
         return response()->json(['did' => $request->user()->did]);
     }
 
+    public function show(Request $request)
+    {
+        return $request->user()->load("paymentDetails");
+    }
+
 }

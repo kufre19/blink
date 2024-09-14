@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Transaction;
+use Illuminate\Support\Facades\Auth;
 
 class TransactionController extends Controller
 {
@@ -15,5 +16,20 @@ class TransactionController extends Controller
         return response()->json($transactions);
     }
 
-    // You can add more methods here for creating transactions, etc.
+    public function store(Request $request)
+    {
+        $validatedData = $request->validate([
+            'from_currency' => 'required|string',
+            'to_currency' => 'required|string',
+            'from_amount' => 'required|numeric',
+            'to_amount' => 'required|numeric',
+            'status' => 'required|string',
+            'pfi_did' => 'required|string',
+            'exchange_id' => 'required|string',
+        ]);
+
+        $transaction = Auth::user()->transactions()->create($validatedData);
+
+        return response()->json($transaction, 201);
+    }
 }

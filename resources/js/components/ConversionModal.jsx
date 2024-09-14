@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Modal, Paper, Typography, TextField, Button, MenuItem, CircularProgress } from '@mui/material';
 import TbdService from '../services/TbdService';
 
-const ConversionModal = ({ open, handleClose, user }) => {
+const ConversionModal = ({ open, handleClose, user, fetchTransactions }) => {
   const [amount, setAmount] = useState('');
   const [fromCurrency, setFromCurrency] = useState('USD');
   const [toCurrency, setToCurrency] = useState('BTC');
@@ -92,6 +92,37 @@ const ConversionModal = ({ open, handleClose, user }) => {
           if (close.data.success) {
             alert('Order completed successfully!');
             handleClose();
+
+            const transactionData = {
+                from_currency: quote.data.payin.currencyCode,
+                to_currency: quote.data.payout.currencyCode,
+                from_amount: quote.data.payin.amount,
+                to_amount: quote.data.payout.amount,
+                status: 'completed',
+                pfi_did: quote.metadata.from,
+                exchange_id: quote.exchangeId
+              };
+            
+              try {
+                const response = await fetch('/api/transactions', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                  },
+                  body: JSON.stringify(transactionData)
+                });
+            
+                if (!response.ok) {
+                  throw new Error('Failed to store transaction');
+                }
+            
+                // Refresh transactions list
+                fetchTransactions();
+              } catch (error) {
+                console.error('Error storing transaction:', error);
+              }
+
           } else {
             setError(`Order failed. Reason: ${close.data.reason}`);
           }

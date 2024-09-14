@@ -6,6 +6,7 @@ import { DidDht } from '@web5/dids';
 import { useNavigate } from 'react-router-dom';
 
 
+
 const AccountOverview = ({ balance }) => (
   <Paper elevation={3} sx={{ p: 2 }}>
     <Typography variant="h6">Account Overview</Typography>

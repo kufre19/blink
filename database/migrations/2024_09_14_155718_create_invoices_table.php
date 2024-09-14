@@ -18,6 +18,8 @@ return new class extends Migration
             $table->text('description');
             $table->decimal('amount', 10, 2);
             $table->string('status')->default('pending');
+            $table->string('currency');
+
             $table->timestamps();
         });
     }

@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
-    <title>CryptoLand - Crypto Currency Landing Page Template.</title>
+    <title>{{env("APP_NAME")}}</title>
     <meta name="description" content="" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="shortcut icon" type="image/x-icon" href="assets/images/favicon.svg" />
@@ -48,7 +48,9 @@
                         <!-- Start Navbar -->
                         <nav class="navbar navbar-expand-lg">
                             <a class="navbar-brand" href="index.html">
-                                <img src="assets/images/logo/white-logo.svg" alt="Logo">
+                                {{-- <img src="assets/images/logo/white-logo.svg" alt="Logo"> --}}
+                                {{env("APP_NAME")}}
+
                             </a>
                             <button class="navbar-toggler mobile-menu-btn" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
@@ -229,7 +231,9 @@
                             <div class="single-footer f-about">
                                 <div class="logo">
                                     <a href="index.html">
-                                        <img src="assets/images/logo/white-logo.svg" alt="#">
+                                        {{-- <img src="assets/images/logo/white-logo.svg" alt="#"> --}}
+                                        {{env("APP_NAME")}}
+
                                     </a>
                                 </div>
                                 <p>Making the world a better place through constructing elegant hierarchies.</p>

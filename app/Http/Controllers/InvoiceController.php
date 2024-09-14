@@ -7,22 +7,38 @@ use App\Models\Invoice;
 
 class InvoiceController extends Controller
 {
+    public function index(Request $request)
+    {
+        $invoices = $request->user()->invoices()->latest()->get();
+        return response()->json($invoices);
+    }
+
     public function store(Request $request)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'amount' => 'required|numeric|min:0',
+            'currency' => 'required|string|max:3',
         ]);
 
-        $invoice = Invoice::create([
-            'user_id' => $request->user()->id,
-            'name' => $request->name,
-            'description' => $request->description,
-            'amount' => $request->amount,
-            'status' => 'pending',
-        ]);
-
+        $invoice = $request->user()->invoices()->create($validatedData);
         return response()->json($invoice, 201);
+    }
+
+    public function show(Invoice $invoice)
+    {
+        $this->authorize('view', $invoice);
+        return response()->json($invoice);
+    }
+
+    public function pay(Request $request, Invoice $invoice)
+    {
+        $this->authorize('update', $invoice);
+        
+     
+        $invoice->update(['status' => 'paid']);
+        
+        return response()->json($invoice);
     }
 }

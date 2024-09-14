@@ -10,7 +10,7 @@ class TransactionsTableSeeder extends Seeder
 {
     public function run()
     {
-        $user = User::first(); // or select a specific user
+        $user = 8; // or select a specific user
 
         $types = ['buy', 'sell', 'deposit', 'withdraw'];
         $currencies = ['USD', 'EUR', 'BTC', 'ETH'];
@@ -18,7 +18,7 @@ class TransactionsTableSeeder extends Seeder
 
         for ($i = 0; $i < 20; $i++) {
             Transactions::create([
-                'user_id' => $user->id,
+                'user_id' => 8,
                 'type' => $types[array_rand($types)],
                 'amount' => rand(100, 10000) / 100,
                 'currency' => $currencies[array_rand($currencies)],

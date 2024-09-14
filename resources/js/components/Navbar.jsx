@@ -11,7 +11,8 @@ const Navbar = () => {
           <div className="col-lg-12">
             <nav className="navbar navbar-expand-lg">
               <Link className="navbar-brand" to="/">
-                <img src="/assets/images/logo/white-logo.svg" alt="Logo" />
+                {/* <img src="/assets/images/logo/white-logo.svg" alt="Logo" /> */}
+                <h1>BLINK</h1>
               </Link>
               <button className="navbar-toggler mobile-menu-btn" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
