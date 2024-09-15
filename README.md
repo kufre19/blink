@@ -1,4 +1,4 @@
-# Blink TBDex Wallet: Blink
+# Blink TBDex Wallet:
 
 ## Overview
 TBDex Wallet: Blink is a minimalist, user-friendly wallet application built on the tbDEX protocol, our web5 wallet application focuses on providing seamless currency conversion and fast cross-border payments, including the management of their business finace through invoice management.
@@ -106,5 +106,3 @@ flowchart TD
 
 
 
-## License
-This project is open source and available under the [MIT License](LICENSE).
