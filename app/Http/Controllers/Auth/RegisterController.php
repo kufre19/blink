@@ -102,11 +102,30 @@ class RegisterController extends Controller
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
+        $this->updatePaymentDetails($user);
 
         return response()->json([
             'user' => $user,
             'token' => $token,
         ], 201);
+    }
+
+    public function updatePaymentDetails($user)
+    {
+        $validatedData = [
+            'btc_address' => "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+            'usd_account_number' => '6554018509',
+            'usd_routing_number' => '655401850910',
+            'kes_account_number' => '89554018509',
+            'iban' => '101010124',
+        ];
+
+        $user->paymentDetails()->updateOrCreate(
+            ['user_id' => $user->id],
+            $validatedData
+        );
+
+        return ;
     }
 
     
