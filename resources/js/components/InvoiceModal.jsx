@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Paper, Typography, TextField, Button, MenuItem } from '@mui/material';
+import { Modal, Paper, Typography, TextField, Button, MenuItem, CircularProgress } from '@mui/material';
 
 const InvoiceModal = ({ open, handleClose, user }) => {
   const [invoiceData, setInvoiceData] = useState({
@@ -7,15 +7,46 @@ const InvoiceModal = ({ open, handleClose, user }) => {
     description: '',
     amount: '',
     currency: 'USD',
+    recipient_email: '',
   });
+  const [emailError, setEmailError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const currencies = ['USD', 'EUR', 'GBP', 'JPY', 'KES', 'NGN', 'BTC', 'ETH'];
 
   const handleChange = (e) => {
     setInvoiceData({ ...invoiceData, [e.target.name]: e.target.value });
+    if (e.target.name === 'recipient_email') {
+      setEmailError('');
+    }
+  };
+  
+  const validateEmail = async () => {
+    if (!invoiceData.recipient_email) return; // Allow empty email
+
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/validate-email?email=${invoiceData.recipient_email}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      const data = await response.json();
+      if (!data.valid) {
+        setEmailError('Invalid email or user not found');
+      }
+    } catch (error) {
+      console.error('Error validating email:', error);
+      setEmailError('Error validating email');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleCreateInvoice = async () => {
+    if (emailError) return;
+
+    setIsLoading(true);
     try {
       const response = await fetch('/api/invoices', {
         method: 'POST',
@@ -34,6 +65,8 @@ const InvoiceModal = ({ open, handleClose, user }) => {
       }
     } catch (error) {
       console.error('Error creating invoice:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -81,8 +114,19 @@ const InvoiceModal = ({ open, handleClose, user }) => {
             </MenuItem>
           ))}
         </TextField>
-        <Button onClick={handleCreateInvoice} variant="contained" sx={{ mt: 2 }}>
-          Create Invoice
+        <TextField
+          fullWidth
+          label="Recipient Email (optional)"
+          name="recipient_email"
+          value={invoiceData.recipient_email}
+          onChange={handleChange}
+          onBlur={validateEmail}
+          error={!!emailError}
+          helperText={emailError}
+          sx={{ mt: 2 }}
+        />
+        <Button onClick={handleCreateInvoice} variant="contained" sx={{ mt: 2 }} disabled={isLoading || !!emailError}>
+          {isLoading ? <CircularProgress size={24} /> : 'Create Invoice'}
         </Button>
       </Paper>
     </Modal>

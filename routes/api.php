@@ -39,6 +39,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/invoices', [InvoiceController::class, 'store']);
     Route::get('/invoices/{invoice}', [InvoiceController::class, 'show']);
     Route::post('/invoices/{invoice}/pay', [InvoiceController::class, 'pay']);
+    Route::get('/validate-email', [InvoiceController::class, 'validateEmail'])->middleware('auth:sanctum');
 
 
     Route::get('/profile', [ProfileController::class, 'show']);

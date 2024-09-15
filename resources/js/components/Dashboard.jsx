@@ -140,6 +140,7 @@ const Dashboard = () => {
                     <InvoiceListingComponent
                         invoices={invoices}
                         onPayClick={handlePayInvoice}
+                        user={user}
                     />
                 </Grid>
             </Grid>
