@@ -13,59 +13,39 @@ TBDex Wallet: Blink is a minimalist, user-friendly wallet application built on t
 ## Application Flow Diagram
 
 ```mermaid
-sequenceDiagram
-    participant User
-    participant Frontend
-    participant Backend
-    participant TbdService
-    participant PFI
-    participant TBDEX
+flowchart TD
+    A[User] --> B{Sign Up / Sign In}
+    B -->|New User| C[Create DID]
+    B -->|Existing User| D[Authenticate]
+    C --> E[Store User Data & DID]
+    D --> E
+    E --> F[Display Dashboard]
 
-    %% Sign Up / Sign In
-    User->>Frontend: Enter credentials
-    Frontend->>Backend: Send credentials
-    Backend->>TbdService: Create DID (for sign up)
-    TbdService-->>Backend: Return DID
-    Backend->>Backend: Store user data & DID
-    Backend-->>Frontend: Return auth token
-    Frontend-->>User: Display dashboard
+    F --> G{User Action}
+    G -->|Currency Conversion| H[Select Currencies & Amount]
+    G -->|Create Invoice| R[Enter Invoice Details]
 
-    %% Currency Conversion (Blink)
-    User->>Frontend: Select currencies & amount
-    Frontend->>TbdService: Get offerings
-    TbdService->>TBDEX: Fetch offerings from PFIs
-    TBDEX->>PFI: Request offerings
-    PFI-->>TBDEX: Provide offerings
-    TBDEX-->>TbdService: Return offerings
-    TbdService-->>Frontend: Return filtered offerings
-    Frontend-->>User: Display offerings
-    User->>Frontend: Select offering
-    Frontend->>TbdService: Create and send RFQ
-    TbdService->>TBDEX: Send RFQ to PFI
-    TBDEX->>PFI: Forward RFQ
-    PFI-->>TBDEX: Return Quote
-    TBDEX-->>TbdService: Return Quote
-    TbdService-->>Frontend: Display Quote
-    Frontend-->>User: Confirm Quote
-    User->>Frontend: Confirm and provide payment details
-    Frontend->>TbdService: Create and send Order
-    TbdService->>TBDEX: Send Order to PFI
-    TBDEX->>PFI: Forward Order
-    PFI-->>TBDEX: Process Order
-    TBDEX-->>TbdService: Return Order Status
-    TbdService-->>Frontend: Update Order Status
-    Frontend-->>User: Display Order Status
+    H --> I[Fetch Offerings from PFIs]
+    I --> J[Display Filtered Offerings]
+    J --> K[User Selects Offering]
+    K --> L[Create and Send RFQ]
+    L --> M[Receive Quote]
+    M --> N{User Confirms?}
+    N -->|Yes| O[Create and Send Order]
+    N -->|No| G
+    O --> P[Process Order]
+    P --> Q[Display Order Status]
+    Q --> S[Rate Transaction]
 
-    %% Invoice Function
-    User->>Frontend: Create Invoice
-    Frontend->>Backend: Store Invoice
-    Backend-->>Frontend: Return Invoice ID
-    Frontend-->>User: Display Invoice details and payment options
+    R --> T[Generate Invoice ID]
+    T --> U[Display Invoice Details]
 
-    %% Transaction Rating
-    User->>Frontend: Rate transaction
-    Frontend->>Backend: Store rating
-    Backend->>Backend: Update PFI satisfaction metrics
+    S --> V[Store Rating]
+    V --> W[Update PFI Metrics]
+
+    Q --> G
+    U --> G
+    W --> G
 
 ```
 
