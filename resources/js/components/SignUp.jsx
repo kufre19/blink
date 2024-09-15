@@ -34,8 +34,9 @@ const SignUp = () => {
 
       if (isImporting) {
         // Import existing portable DID
-        portableDid = await TbdService.importPortableDid(formData.portableDid);
-        didString = portableDid.uri;
+        const importResult = await TbdService.importPortableDid(formData.portableDid);
+        didString = importResult.did.uri;
+        portableDid = importResult.portableDid;
       } else {
         // Create new DID
         const result = await TbdService.createDid();

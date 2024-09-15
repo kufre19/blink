@@ -37,6 +37,31 @@ class TbdService {
     }
   }
 
+  async importPortableDid(portableDidString) {
+    try {
+      const portableDid = JSON.parse(portableDidString);
+      // console.log(portableDid);
+      const importedDid = await DidDht.import({portableDid: portableDid});
+      return {
+        did: importedDid,
+        portableDid: portableDid  // This is the exportable version
+      };
+    } catch (error) {
+      console.error('Error importing portable DID:', error);
+      throw new Error('Failed to import portable DID');
+    }
+  }
+
+  async exportPortableDid(encryptedPortableDid, password) {
+    try {
+      const decryptedPortableDid = this.decryptPortableDid(encryptedPortableDid, password);
+      return decryptedPortableDid;
+    } catch (error) {
+      console.error('Error exporting portable DID:', error);
+      throw new Error('Failed to export portable DID');
+    }
+  }
+
 
 
   encryptPortableDid(portableDid, password) {
