@@ -6,9 +6,10 @@ TBDex Wallet: Blink is a minimalist, user-friendly wallet application built on t
 ## Key Features
 1. Quick Sign Up / Sign In: Streamlined user onboarding with secure authentication and DID creation.
 2. Blink: Instantly convert between fiat and cryptocurrencies using the best available rates from multiple Participating Financial Institutions (PFIs).
-3. Smart Invoicing: Generate and share invoices for quick and easy payments, including multi-use invoices.
-4. Business Integration: Foundation for businesses to use Blink as a payment gateway.
-5. Multi-Currency Support: Create fiat accounts for local currencies and crypto addresses for easy receipt of payments.
+3. Smart Invoicing: Generate and share multiple types of invoices (multi-use, one-time, directed) for quick and easy payments.
+4. Portable DID: Users can export their encrypted portable DID for use on other Web5-compatible platforms.
+5. Business Integration: Foundation for businesses to use Blink as a payment gateway, with plans for an API service.
+6. Multi-Currency Support: Create fiat accounts for local currencies and crypto addresses for easy receipt of payments.
 
 ## Application Flow Diagram
 
