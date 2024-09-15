@@ -99,9 +99,10 @@ sequenceDiagram
 * Expand business integration capabilities
 * Implement advanced analytics for transaction data
 * Enhance security features and compliance measures
+* Create API services that can be consumed by other business allowing them use are our wallet as a payment option
+* A more robus invoicing system to enable customers and business migrate management of their own clients when it comes to finance 
 
-## Contribution
-This project is part of the Africa Bitcoin Conference Hackathon. Contributions are welcome! Please feel free to submit a Pull Request.
+
 
 ## License
 This project is open source and available under the [MIT License](LICENSE).
