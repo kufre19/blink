@@ -84,8 +84,8 @@ const PayInvoiceModal = ({ open, handleClose, user, invoice }) => {
         if (fromCurrency === 'USD' && invoice.currency === 'BTC') {
             // For USD -> BTC, we need USD account details from the payer
             setPayinDetails({
-                accountNumber: '',
-                routingNumber: '',
+                accountNumber: user.payment_details.usd_account_number,
+                routingNumber: user.payment_details.usd_routing_number,
             });
         }
         // For NGN -> KES, we don't need any additional details from the payer
@@ -234,7 +234,8 @@ const PayInvoiceModal = ({ open, handleClose, user, invoice }) => {
 
             <RatingModal
                 open={showRatingModal}
-                handleClose={() => setShowRatingModal(false)}
+           
+            handleClose={() => {setShowRatingModal(false);  handleClose();}}
                 transactionId={completedTransactionId}
                 onSubmitRating={handleSubmitRating}
             />
