@@ -17,13 +17,14 @@ flowchart TD
     A[User] --> B{Sign Up / Sign In}
     B -->|New User| C[Create DID]
     B -->|Existing User| D[Authenticate]
-    C --> E[Store User Data & DID]
+    C --> E[Store User Data & Encrypted Portable DID]
     D --> E
     E --> F[Display Dashboard]
 
     F --> G{User Action}
     G -->|Currency Conversion| H[Select Currencies & Amount]
-    G -->|Create Invoice| R[Enter Invoice Details]
+    G -->|Create Invoice| R{Invoice Type}
+    G -->|Export DID| X[Export Encrypted Portable DID]
 
     H --> I[Fetch Offerings from PFIs]
     I --> J[Display Filtered Offerings]
@@ -37,8 +38,12 @@ flowchart TD
     P --> Q[Display Order Status]
     Q --> S[Rate Transaction]
 
-    R --> T[Generate Invoice ID]
-    T --> U[Display Invoice Details]
+    R -->|Multi-use| T1[Generate Reusable Invoice ID]
+    R -->|One-time| T2[Generate One-time Invoice ID]
+    R -->|Directed| T3[Generate Invoice for Specific User]
+    T1 --> U[Display Invoice Details]
+    T2 --> U
+    T3 --> U
 
     S --> V[Store Rating]
     V --> W[Update PFI Metrics]
@@ -46,7 +51,14 @@ flowchart TD
     Q --> G
     U --> G
     W --> G
+    X --> G
 
+    subgraph Future Plans
+        Y[API Service for Businesses]
+        Z[Use Blink as Payment Gateway]
+    end
+
+    Y --> Z
 ```
 
 
