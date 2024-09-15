@@ -4,15 +4,16 @@ import Navbar from './Navbar';
 import TbdService from '../services/TbdService';
 import Alert from './Alert';
 
-
 const SignUp = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    portableDid: ''
   });
+  const [isImporting, setIsImporting] = useState(false);
   const [alert, setAlert] = useState({ show: false, message: '', type: '' });
 
   const handleChange = (e) => {
@@ -29,8 +30,20 @@ const SignUp = () => {
     }
 
     try {
-      const { didString, portableDid } = await TbdService.createDid();
-      const encryptedPortableDid = TbdService.encryptPortableDid(portableDid, formData.password);
+      let didString, portableDid, encryptedPortableDid;
+
+      if (isImporting) {
+        // Import existing portable DID
+        portableDid = await TbdService.importPortableDid(formData.portableDid);
+        didString = portableDid.uri;
+      } else {
+        // Create new DID
+        const result = await TbdService.createDid();
+        didString = result.didString;
+        portableDid = result.portableDid;
+      }
+
+      encryptedPortableDid = TbdService.encryptPortableDid(portableDid, formData.password);
       const verifiableCredential = await TbdService.getVerifiableCredential(formData.name, didString);
 
       const response = await fetch('/api/register', {
@@ -66,7 +79,6 @@ const SignUp = () => {
     }
   };
 
-
   return (
     <>
       <Navbar />
@@ -77,8 +89,8 @@ const SignUp = () => {
               <form className="card login-form inner-content" onSubmit={handleSubmit}>
                 <div className="card-body">
                   <div className="title">
-                    <h3>Sign Up Now</h3>
-                    <p>Use the form below to create your account.</p>
+                    <h3>{isImporting ? 'Import Existing DID' : 'Sign Up Now'}</h3>
+                    <p>{isImporting ? 'Import your existing DID to create an account.' : 'Use the form below to create your account.'}</p>
                   </div>
                   {alert.show && <Alert message={alert.message} type={alert.type} onClose={() => setAlert({ ...alert, show: false })} />}
                   <div className="input-head">
@@ -98,9 +110,26 @@ const SignUp = () => {
                       <label><i className="lni lni-lock-alt"></i></label>
                       <input className="form-control" type="password" name="confirmPassword" placeholder="Confirm password" required onChange={handleChange} />
                     </div>
+                    {isImporting && (
+                      <div className="form-group input-group">
+                        <label><i className="lni lni-key"></i></label>
+                        <textarea
+                          className="form-control"
+                          name="portableDid"
+                          placeholder="Paste your portable DID here"
+                          required
+                          onChange={handleChange}
+                        />
+                      </div>
+                    )}
                   </div>
                   <div className="button">
-                    <button className="btn" type="submit">Create Account</button>
+                    <button className="btn" type="submit">{isImporting ? 'Import DID and Register' : 'Create Account'}</button>
+                  </div>
+                  <div className="alt-option">
+                    <button type="button" className="btn btn-link" onClick={() => setIsImporting(!isImporting)}>
+                      {isImporting ? 'Create New Account Instead' : 'Import Existing DID'}
+                    </button>
                   </div>
                   <h4 className="create-account">Already have an account? <Link to="/signin">Sign In</Link></h4>
                 </div>
