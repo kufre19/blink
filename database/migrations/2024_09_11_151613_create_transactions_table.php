@@ -21,6 +21,9 @@ return new class extends Migration
             $table->string('status');
             $table->string('pfi_did');
             $table->string('exchange_id');
+            $table->string('rating')->nullable();
+            $table->text('rating_comment')->nullable();
+
             $table->timestamps();
         });
     }

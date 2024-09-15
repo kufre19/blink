@@ -20,7 +20,7 @@ const InvoiceModal = ({ open, handleClose, user }) => {
       setEmailError('');
     }
   };
-  
+
   const validateEmail = async () => {
     if (!invoiceData.recipient_email) return; // Allow empty email
 
@@ -59,7 +59,6 @@ const InvoiceModal = ({ open, handleClose, user }) => {
 
       if (response.ok) {
         handleClose();
-        // You might want to refresh the invoice list here
       } else {
         console.error('Failed to create invoice');
       }

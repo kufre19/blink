@@ -29,9 +29,13 @@ Route::post('/register', [App\Http\Controllers\Auth\RegisterController::class, '
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [UserController::class, 'show']);
+    Route::get('/users/{user}/payment-details', [UserController::class, 'getPaymentDetails']);
+
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/transactions', [TransactionController::class, 'index']);
     Route::post('/transactions', [TransactionController::class, 'store']);
+    Route::post('/transactions/{id}/rate', [TransactionController::class, 'rateTransaction']);
+
 
   
     

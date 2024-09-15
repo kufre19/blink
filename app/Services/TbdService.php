@@ -18,7 +18,7 @@ class TbdService
         // This is a mock implementation. Replace with actual API call to the mock identity verifier
         $response = Http::get("https://mock-idv.tbddev.org/kcc", [
             'name' => $name,
-            'country' => 'US', // You might want to collect this from the user
+            'country' => 'US', 
             'did' => $did
         ]);
 

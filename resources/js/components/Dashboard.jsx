@@ -172,10 +172,10 @@ const Dashboard = () => {
                     invoice={selectedInvoice}
                 />
             )}
-
+{/* 
             <Button component={Link} to="/profile" variant="contained" color="primary" sx={{ mt: 2 }}>
                 Update Payment Details
-            </Button>
+            </Button> */}
         </Container>
     );
 };

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Transaction;
+use App\Models\Transactions;
 use Illuminate\Support\Facades\Auth;
 
 class TransactionController extends Controller
@@ -31,5 +32,26 @@ class TransactionController extends Controller
         $transaction = Auth::user()->transactions()->create($validatedData);
 
         return response()->json($transaction, 201);
+    }
+
+    public function rateTransaction(Request $request, $id)
+    {
+        $request->validate([
+            'rating' => 'required|integer|min:1|max:5',
+            'comment' => 'nullable|string|max:500',
+        ]);
+
+        $transaction = Transactions::findOrFail($id);
+
+        // Ensure the user can only rate their own transactions
+        if ($transaction->user_id !== auth()->id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $transaction->rating = $request->rating;
+        $transaction->rating_comment = $request->comment;
+        $transaction->save();
+
+        return response()->json(['message' => 'Rating submitted successfully']);
     }
 }
