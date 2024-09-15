@@ -93,8 +93,7 @@ sequenceDiagram
 * Backend: Laravel (PHP)
 * TBD Integration: @tbdex/http-client, @web5/dids
 
-## Getting Started
-(Instructions for setting up and running the project will be added here)
+
 
 ## Future Plans
 * Expand business integration capabilities
