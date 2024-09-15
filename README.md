@@ -1,7 +1,7 @@
-# TBDex Wallet: Blink
+# Blink TBDex Wallet: Blink
 
 ## Overview
-TBDex Wallet: Blink is a minimalist, user-friendly wallet application built on the tbDEX protocol for the Africa Bitcoin Conference Hackathon. Our MVP focuses on providing seamless currency conversion and fast cross-border payments without the need for users to hold balances in the wallet.
+TBDex Wallet: Blink is a minimalist, user-friendly wallet application built on the tbDEX protocol, our web5 wallet application focuses on providing seamless currency conversion and fast cross-border payments, including the management of their business finace through invoice management.
 
 ## Key Features
 1. Quick Sign Up / Sign In: Streamlined user onboarding with secure authentication and DID creation.
@@ -81,7 +81,7 @@ sequenceDiagram
 * Users can view and compare different offerings before making a decision.
 
 ### Customer Management
-* Decentralized Identifiers (DIDs) are created for each user during the sign-up process.
+* Decentralized Identifiers (DIDs) are created for each user during the sign-up process and store an encrypted portable version of thier new DID that can be exported and used on other applications that are built on the tbDEX protocol.
 * Verifiable Credentials are obtained and securely stored, streamlining the KYC process for future transactions.
 
 ### Customer Satisfaction
