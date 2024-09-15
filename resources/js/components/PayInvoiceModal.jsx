@@ -283,17 +283,20 @@ const PayInvoiceModal = ({ open, handleClose, user, invoice }) => {
                                         fullWidth
                                         label="USD Account Number"
                                         name="accountNumber"
-                                        value={payinDetails.accountNumber || ''}
+                                        value={user.payment_details.usd_account_number}
                                         onChange={handlePayinDetailsChange}
                                         margin="normal"
+                                        disabled
                                     />
                                     <TextField
                                         fullWidth
                                         label="USD Routing Number"
                                         name="routingNumber"
-                                        value={payinDetails.routingNumber || ''}
+                                        value={user.payment_details.usd_routing_number}
                                         onChange={handlePayinDetailsChange}
                                         margin="normal"
+                                        disabled
+
                                     />
                                 </>
                             )}
