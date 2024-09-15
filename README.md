@@ -3,63 +3,72 @@
 ## Overview
 TBDex Wallet: Blink is a minimalist, user-friendly wallet application built on the tbDEX protocol, our web5 wallet application focuses on providing seamless currency conversion and fast cross-border payments, including the management of their business finace through invoice management.
 
+
 ## Key Features
-1. Quick Sign Up / Sign In: Streamlined user onboarding with secure authentication and DID creation.
+1. Flexible Authentication: 
+   - Quick Sign Up for new users with secure DID creation
+   - Standard Sign In for existing users
+   - Sign Up with existing portable DID for seamless cross-platform experience now users won't need to manage multiple DIDs to use our platform
 2. Blink: Instantly convert between fiat and cryptocurrencies using the best available rates from multiple Participating Financial Institutions (PFIs).
 3. Smart Invoicing: Generate and share multiple types of invoices (multi-use, one-time, directed) for quick and easy payments.
-4. Portable DID: Users can export their encrypted portable DID for use on other Web5-compatible platforms.
+4. Portable DID: Users can export and import their encrypted portable DID for use across Web5-compatible platforms.
 5. Business Integration: Foundation for businesses to use Blink as a payment gateway, with plans for an API service.
 6. Multi-Currency Support: Create fiat accounts for local currencies and crypto addresses for easy receipt of payments.
-
 ## Application Flow Diagram
 
 ```mermaid
 flowchart TD
     A[User] --> B{Sign Up / Sign In}
     B -->|New User| C[Create DID]
-    B -->|Existing User| D[Authenticate]
-    C --> E[Store User Data & Encrypted Portable DID]
-    D --> E
-    E --> F[Display Dashboard]
+    B -->|Existing User| D{Authentication Method}
+    B -->|Use Portable DID| E[Import Encrypted Portable DID]
+    
+    C --> F[Store User Data & Encrypted Portable DID]
+    D -->|Standard| G[Authenticate]
+    E --> H[Verify DID]
+    
+    G --> F
+    H --> F
+    F --> I[Display Dashboard]
 
-    F --> G{User Action}
-    G -->|Currency Conversion| H[Select Currencies & Amount]
-    G -->|Create Invoice| R{Invoice Type}
-    G -->|Export DID| X[Export Encrypted Portable DID]
+    I --> J{User Action}
+    J -->|Currency Conversion| K[Select Currencies & Amount]
+    J -->|Create Invoice| S{Invoice Type}
+    J -->|Export DID| Y[Export Encrypted Portable DID]
 
-    H --> I[Fetch Offerings from PFIs]
-    I --> J[Display Filtered Offerings]
-    J --> K[User Selects Offering]
-    K --> L[Create and Send RFQ]
-    L --> M[Receive Quote]
-    M --> N{User Confirms?}
-    N -->|Yes| O[Create and Send Order]
-    N -->|No| G
-    O --> P[Process Order]
-    P --> Q[Display Order Status]
-    Q --> S[Rate Transaction]
+    K --> L[Fetch Offerings from PFIs]
+    L --> M[Display Filtered Offerings]
+    M --> N[User Selects Offering]
+    N --> O[Create and Send RFQ]
+    O --> P[Receive Quote]
+    P --> Q{User Confirms?}
+    Q -->|Yes| R[Create and Send Order]
+    Q -->|No| J
+    R --> T[Process Order]
+    T --> U[Display Order Status]
+    U --> V[Rate Transaction]
 
-    R -->|Multi-use| T1[Generate Reusable Invoice ID]
-    R -->|One-time| T2[Generate One-time Invoice ID]
-    R -->|Directed| T3[Generate Invoice for Specific User]
-    T1 --> U[Display Invoice Details]
-    T2 --> U
-    T3 --> U
+    S -->|Multi-use| W1[Generate Reusable Invoice ID]
+    S -->|One-time| W2[Generate One-time Invoice ID]
+    S -->|Directed| W3[Generate Invoice for Specific User]
+    W1 --> X[Display Invoice Details]
+    W2 --> X
+    W3 --> X
 
-    S --> V[Store Rating]
-    V --> W[Update PFI Metrics]
+    V --> Z[Store Rating]
+    Z --> AA[Update PFI Metrics]
 
-    Q --> G
-    U --> G
-    W --> G
-    X --> G
+    U --> J
+    X --> J
+    AA --> J
+    Y --> J
 
     subgraph Future Plans
-        Y[API Service for Businesses]
-        Z[Use Blink as Payment Gateway]
+        AB[API Service for Businesses]
+        AC[Use Blink as Payment Gateway]
     end
 
-    Y --> Z
+    AB --> AC
 ```
 
 

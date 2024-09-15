@@ -44,7 +44,7 @@ class TbdService {
       const importedDid = await DidDht.import({portableDid: portableDid});
       return {
         did: importedDid,
-        portableDid: portableDid  // This is the exportable version
+        portableDid: portableDid  
       };
     } catch (error) {
       console.error('Error importing portable DID:', error);
