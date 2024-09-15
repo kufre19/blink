@@ -67,6 +67,8 @@ sequenceDiagram
     Frontend->>Backend: Store rating
     Backend->>Backend: Update PFI satisfaction metrics
 
+```
+
 
 ## Design Considerations
 
