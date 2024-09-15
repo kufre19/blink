@@ -103,4 +103,4 @@ sequenceDiagram
 This project is part of the Africa Bitcoin Conference Hackathon. Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
-This project is open source and available under the [MIT License](LICENSE).```
+This project is open source and available under the [MIT License](LICENSE).
