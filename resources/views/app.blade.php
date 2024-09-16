@@ -22,5 +22,7 @@
     <script src="{{ asset('assets/js/glightbox.min.js') }}"></script>
     <script src="{{ asset('assets/js/count-up.min.js') }}"></script>
     <script src="{{ asset('assets/js/main.js') }}"></script>
+    <script src="{{ asset('build/js/app.js') }}"></script>
+
 </body>
 </html>
